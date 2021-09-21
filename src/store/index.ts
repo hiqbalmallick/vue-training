@@ -4,6 +4,7 @@ import { findIndex } from "@/utils/utils";
 import Vue from "vue";
 import Vuex from "vuex";
 import { MUTATION_TYPES } from "./types";
+import snackbar from "./modules/snackbar";
 
 Vue.use(Vuex);
 
@@ -65,5 +66,7 @@ export default new Vuex.Store({
       commit(MUTATION_TYPES.DELETE_FROM_CART, index);
     },
   },
-  modules: {},
+  modules: {
+    snackbar: snackbar,
+  },
 });

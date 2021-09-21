@@ -1,0 +1,3 @@
+export const MUTATION_TYPES = {
+  SHOW_MESSAGE: "SHOW_MESSAGE",
+};
