@@ -1,5 +1,5 @@
 import Vue, { PluginObject } from "vue";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 
 // Full config:  https://github.com/axios/axios#request-config
 // axios.defaults.baseURL = process.env.baseURL || process.env.apiUrl || '';
@@ -56,5 +56,21 @@ Plugin.install = (Vue) => {
 };
 
 Vue.use(Plugin);
+
+export const get = (url: string): Promise<AxiosResponse<any>> => {
+  return _axios.get(url);
+};
+export const post = (url: string, body?: any): Promise<AxiosResponse<any>> => {
+  return _axios.post(url, body);
+};
+export const put = (url: string, body?: any): Promise<AxiosResponse<any>> => {
+  return _axios.put(url, body);
+};
+export const remove = (
+  url: string,
+  body?: any
+): Promise<AxiosResponse<any>> => {
+  return _axios.delete(url, body);
+};
 
 export default Plugin;
