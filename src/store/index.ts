@@ -53,17 +53,35 @@ export default new Vuex.Store({
         console.log(`ex`, ex);
       }
     },
-    async addToCart({ commit, state }, data: ProductItem) {
+    async addToCart({ commit, dispatch, state }, data: ProductItem) {
       const index = findIndex(state.cart, data);
       if (index !== -1) {
         commit(MUTATION_TYPES.UPDATE_PRODUCT_QUANTITY, index);
       } else {
+        dispatch(
+          "snackbar/showSnack",
+          {
+            text: "Item added to cart!",
+            color: "primary",
+            timeout: 2000,
+          },
+          { root: true }
+        );
         commit(MUTATION_TYPES.ADD_TO_CART, data);
       }
     },
-    async deleteFromCart({ commit, state }, data: ProductItem) {
+    async deleteFromCart({ commit, dispatch, state }, data: ProductItem) {
       const index = findIndex(state.cart, data);
       commit(MUTATION_TYPES.DELETE_FROM_CART, index);
+      dispatch(
+        "snackbar/showSnack",
+        {
+          text: "Item deleted from cart!",
+          color: "primary",
+          timeout: 2000,
+        },
+        { root: true }
+      );
     },
   },
   modules: {

@@ -18,6 +18,7 @@
     </v-main>
 
     <v-footer app />
+    <snackbar />
   </v-app>
 </template>
 
@@ -25,9 +26,10 @@
 import Vue from "vue";
 import { mapState } from "vuex";
 import SideNav from "./SideNav.vue";
+import Snackbar from "./Snackbar.vue";
 
 export default Vue.extend({
-  components: { SideNav },
+  components: { SideNav, Snackbar },
   computed: { ...mapState(["cart"]) },
   name: "Layout",
 });
