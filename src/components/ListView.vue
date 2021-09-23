@@ -2,7 +2,7 @@
   <v-skeleton-loader :loading="loading" type="table">
     <v-data-table
       :headers="headers"
-      :items="products"
+      :items="productsList"
       sort-by="calories"
       class="elevation-1"
     >
@@ -90,7 +90,7 @@
         >
           mdi-cart
         </v-icon>
-        <!-- <v-icon small class="mr-2" @click="editItem(item)"> mdi-eye </v-icon> -->
+        <v-icon small class="mr-2" @click="navigate(item.id)"> mdi-eye </v-icon>
         <v-icon small class="mr-2" @click="editItem(item)"> mdi-pencil </v-icon>
         <v-icon small @click="deleteItem(item)"> mdi-delete </v-icon>
       </template>
@@ -108,7 +108,7 @@
 
 <script>
 import { findIndex } from "@/utils/utils";
-import { mapActions, mapState } from "vuex";
+import { mapActions, mapGetters, mapState } from "vuex";
 export default {
   data: () => ({
     dialog: false,
@@ -149,7 +149,8 @@ export default {
     formTitle() {
       return this.editedIndex === -1 ? "New Item" : "Edit Item";
     },
-    ...mapState(["products", "cart"]),
+    ...mapState(["cart"]),
+    ...mapGetters(["productsList"]),
   },
 
   watch: {
@@ -172,29 +173,32 @@ export default {
       "addToCart",
       "deleteFromCart",
     ]),
+    navigate(id) {
+      this.$router.push(`product/${id}`);
+    },
     async fetchList() {
       this.loading = true;
       await this.fetchProducts();
       this.loading = false;
     },
     isInCart(item) {
-      return findIndex(this.cart, item) !== -1;
+      return findIndex(this.cart.list, item) !== -1;
     },
 
     editItem(item) {
-      this.editedIndex = this.products.indexOf(item);
+      this.editedIndex = this.productsList.indexOf(item);
       this.editedItem = Object.assign({}, item);
       this.dialog = true;
     },
 
     deleteItem(item) {
-      this.editedIndex = this.products.indexOf(item);
+      this.editedIndex = this.productsList.indexOf(item);
       this.editedItem = Object.assign({}, item);
       this.dialogDelete = true;
     },
 
     deleteItemConfirm() {
-      this.products.splice(this.editedIndex, 1);
+      this.productsList.splice(this.editedIndex, 1);
       this.closeDelete();
     },
 
@@ -216,13 +220,13 @@ export default {
 
     save() {
       if (this.editedIndex > -1) {
-        Object.assign(this.products[this.editedIndex], this.editedItem);
+        Object.assign(this.productsList[this.editedIndex], this.editedItem);
       } else {
         this.addProduct({
           ...this.editedItem,
           image: "https://fakestoreapi.com/img/71li-ujtlUL._AC_UX679_.jpg",
         });
-        // this.products.push(this.editedItem);
+        // this.productsList.push(this.editedItem);
       }
       this.close();
     },

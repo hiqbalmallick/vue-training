@@ -5,7 +5,7 @@
     <v-app-bar app>
       <v-spacer />
       <v-btn icon>
-        <v-badge overlap :content="cart.length ? cart.length : '0'">
+        <v-badge overlap :content="cart.list.length ? cart.list.length : '0'">
           <v-icon>mdi-cart</v-icon>
         </v-badge>
       </v-btn>
