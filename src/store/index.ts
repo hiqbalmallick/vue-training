@@ -1,4 +1,4 @@
-import { CartItem, ProductItem } from "@/interfaces";
+import { CartItem, CommonStoreState, ProductItem } from "@/interfaces";
 import productService from "@/services/products.service";
 import { findIndex } from "@/utils/utils";
 import Vue from "vue";
@@ -10,37 +10,58 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    products: <Array<ProductItem>>[],
-    cart: <Array<CartItem>>[],
+    product: <CommonStoreState<ProductItem>>{
+      list: <Array<ProductItem>>[],
+      value: <ProductItem>{},
+    },
+    cart: <CommonStoreState<CartItem>>{
+      list: <Array<CartItem>>[],
+      value: <CartItem>{},
+    },
   },
   mutations: {
     [MUTATION_TYPES.ADD_PRODUCT](state, payload: ProductItem) {
-      state.products.push(payload);
+      state.product.list.push(payload);
     },
     [MUTATION_TYPES.SET_PRODUCTS_LIST](state, payload: Array<ProductItem>) {
-      state.products = payload;
+      state.product.list = payload;
+    },
+    [MUTATION_TYPES.SET_PRODUCTS_VALUE](state, payload: ProductItem) {
+      state.product.value = payload;
     },
     [MUTATION_TYPES.UPDATE_PRODUCT_QUANTITY](state, payload: number) {
-      state.cart[payload] = {
-        ...state.cart[payload],
-        quantity: state.cart[payload].quantity + 1,
+      state.cart.list[payload] = {
+        ...state.cart.list[payload],
+        quantity: state.cart.list[payload].quantity + 1,
       };
     },
     [MUTATION_TYPES.ADD_TO_CART](state, payload: ProductItem) {
-      state.cart.push({
+      state.cart.list.push({
         quantity: 1,
         product: payload,
       });
     },
     [MUTATION_TYPES.DELETE_FROM_CART](state, payload: number) {
-      state.cart.splice(payload, 1);
+      state.cart.list.splice(payload, 1);
     },
+  },
+  getters: {
+    productsList: (state) => state.product.list,
+    productValue: (state) => state.product.value,
   },
   actions: {
     async fetchProducts({ commit }) {
       try {
         const response = await productService.get();
         commit(MUTATION_TYPES.SET_PRODUCTS_LIST, response);
+      } catch (ex) {
+        console.log(`ex`, ex);
+      }
+    },
+    async getProductById({ commit }, id: string) {
+      try {
+        const response = await productService.getById(id);
+        commit(MUTATION_TYPES.SET_PRODUCTS_VALUE, response);
       } catch (ex) {
         console.log(`ex`, ex);
       }
@@ -54,7 +75,7 @@ export default new Vuex.Store({
       }
     },
     async addToCart({ commit, dispatch, state }, data: ProductItem) {
-      const index = findIndex(state.cart, data);
+      const index = findIndex(state.cart.list, data);
       if (index !== -1) {
         commit(MUTATION_TYPES.UPDATE_PRODUCT_QUANTITY, index);
       } else {
@@ -71,7 +92,7 @@ export default new Vuex.Store({
       }
     },
     async deleteFromCart({ commit, dispatch, state }, data: ProductItem) {
-      const index = findIndex(state.cart, data);
+      const index = findIndex(state.cart.list, data);
       commit(MUTATION_TYPES.DELETE_FROM_CART, index);
       dispatch(
         "snackbar/showSnack",
