@@ -29,11 +29,21 @@ export default new Vuex.Store({
     [MUTATION_TYPES.SET_PRODUCTS_VALUE](state, payload: ProductItem) {
       state.product.value = payload;
     },
-    [MUTATION_TYPES.UPDATE_PRODUCT_QUANTITY](state, payload: number) {
-      state.cart.list[payload] = {
-        ...state.cart.list[payload],
-        quantity: state.cart.list[payload].quantity + 1,
+    [MUTATION_TYPES.INCREMENT_PRODUCT_QUANTITY](state, payload: number) {
+      const cart = { ...state.cart };
+      cart.list[payload] = {
+        ...cart.list[payload],
+        quantity: cart.list[payload].quantity + 1,
       };
+      state.cart = cart;
+    },
+    [MUTATION_TYPES.DECREMENT_PRODUCT_QUANTITY](state, payload: number) {
+      const cart = { ...state.cart };
+      cart.list[payload] = {
+        ...cart.list[payload],
+        quantity: cart.list[payload].quantity - 1,
+      };
+      state.cart = cart;
     },
     [MUTATION_TYPES.ADD_TO_CART](state, payload: ProductItem) {
       state.cart.list.push({
@@ -47,7 +57,23 @@ export default new Vuex.Store({
   },
   getters: {
     productsList: (state) => state.product.list,
-    productValue: (state) => state.product.value,
+    productCartValue: (state) => (item: ProductItem) =>
+      state.cart.list.find((c: CartItem) => c.product.id === item.id),
+    productValue: (state) => ({
+      id: state.product.value.id,
+      title: state.product.value.title,
+      image: state.product.value.image,
+      details: {
+        description: state.product.value.description,
+        price: state.product.value.price,
+        category: state.product.value.category,
+        rating: state.product.value.rating?.rate,
+      },
+    }),
+    cartItemQuantity: (state) =>
+      state.cart.list.reduce((pre: number, cur: CartItem): number => {
+        return (pre += cur.quantity);
+      }, 0),
   },
   actions: {
     async fetchProducts({ commit }) {
@@ -74,31 +100,38 @@ export default new Vuex.Store({
         console.log(`ex`, ex);
       }
     },
-    async addToCart({ commit, dispatch, state }, data: ProductItem) {
+    async addToCart({ commit, dispatch }, data: ProductItem) {
+      await commit(MUTATION_TYPES.ADD_TO_CART, data);
+      dispatch(
+        "snackbar/showSnack",
+        {
+          text: "Item added to cart!",
+          color: "primary",
+          timeout: 2000,
+        },
+        { root: true }
+      );
+    },
+    icrementProductQuantity({ commit, state }, data: ProductItem) {
       const index = findIndex(state.cart.list, data);
-      if (index !== -1) {
-        commit(MUTATION_TYPES.UPDATE_PRODUCT_QUANTITY, index);
+      commit(MUTATION_TYPES.INCREMENT_PRODUCT_QUANTITY, index);
+    },
+    decrementProductQuantity({ commit, dispatch, state }, data: ProductItem) {
+      const index = findIndex(state.cart.list, data);
+      if (state.cart.list[index].quantity <= 1) {
+        dispatch("deleteFromCart", data);
       } else {
-        dispatch(
-          "snackbar/showSnack",
-          {
-            text: "Item added to cart!",
-            color: "primary",
-            timeout: 2000,
-          },
-          { root: true }
-        );
-        commit(MUTATION_TYPES.ADD_TO_CART, data);
+        commit(MUTATION_TYPES.DECREMENT_PRODUCT_QUANTITY, index);
       }
     },
     async deleteFromCart({ commit, dispatch, state }, data: ProductItem) {
       const index = findIndex(state.cart.list, data);
-      commit(MUTATION_TYPES.DELETE_FROM_CART, index);
+      await commit(MUTATION_TYPES.DELETE_FROM_CART, index);
       dispatch(
         "snackbar/showSnack",
         {
           text: "Item deleted from cart!",
-          color: "primary",
+          color: "error",
           timeout: 2000,
         },
         { root: true }

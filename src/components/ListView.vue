@@ -82,14 +82,6 @@
         </v-toolbar>
       </template>
       <template v-slot:item.actions="{ item }">
-        <v-icon
-          small
-          class="mr-2"
-          @click="isInCart(item) ? deleteFromCart(item) : addToCart(item)"
-          :color="isInCart(item) ? '#1976d2' : ''"
-        >
-          mdi-cart
-        </v-icon>
         <v-icon small class="mr-2" @click="navigate(item.id)"> mdi-eye </v-icon>
         <v-icon small class="mr-2" @click="editItem(item)"> mdi-pencil </v-icon>
         <v-icon small @click="deleteItem(item)"> mdi-delete </v-icon>
@@ -107,8 +99,7 @@
 </template>
 
 <script>
-import { findIndex } from "@/utils/utils";
-import { mapActions, mapGetters, mapState } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 export default {
   data: () => ({
     dialog: false,
@@ -149,7 +140,6 @@ export default {
     formTitle() {
       return this.editedIndex === -1 ? "New Item" : "Edit Item";
     },
-    ...mapState(["cart"]),
     ...mapGetters(["productsList"]),
   },
 
@@ -167,12 +157,7 @@ export default {
   },
 
   methods: {
-    ...mapActions([
-      "fetchProducts",
-      "addProduct",
-      "addToCart",
-      "deleteFromCart",
-    ]),
+    ...mapActions(["fetchProducts", "addProduct"]),
     navigate(id) {
       this.$router.push(`product/${id}`);
     },
@@ -180,9 +165,6 @@ export default {
       this.loading = true;
       await this.fetchProducts();
       this.loading = false;
-    },
-    isInCart(item) {
-      return findIndex(this.cart.list, item) !== -1;
     },
 
     editItem(item) {

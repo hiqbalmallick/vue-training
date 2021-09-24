@@ -5,7 +5,7 @@
     <v-app-bar app>
       <v-spacer />
       <v-btn icon>
-        <v-badge overlap :content="cart.list.length ? cart.list.length : '0'">
+        <v-badge overlap :content="cartItemQuantity || '0'">
           <v-icon>mdi-cart</v-icon>
         </v-badge>
       </v-btn>
@@ -24,13 +24,13 @@
 
 <script lang="ts">
 import Vue from "vue";
-import { mapState } from "vuex";
+import { mapGetters } from "vuex";
 import SideNav from "./SideNav.vue";
 import Snackbar from "./Snackbar.vue";
 
 export default Vue.extend({
   components: { SideNav, Snackbar },
-  computed: { ...mapState(["cart"]) },
+  computed: { ...mapGetters(["cartItemQuantity"]) },
   name: "Layout",
 });
 </script>
