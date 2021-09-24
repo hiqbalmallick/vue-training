@@ -1,8 +1,5 @@
+import { capitalize, currencySymbol } from "@/utils/utils";
 import Vue from "vue";
 
-export const capitalize = (value: string): string => {
-  if (!value) return "";
-  value = value.toString();
-  return value.charAt(0).toUpperCase() + value.slice(1);
-};
 Vue.filter("capitalize", capitalize);
+Vue.filter("currencySymbol", currencySymbol);

@@ -1,6 +1,20 @@
 <template>
   <v-container fluid class="products">
-    <v-row dense>
+    <v-row v-if="loading">
+      <v-col md="3" sm="12">
+        <v-skeleton-loader type="image, table-tfoot" />
+      </v-col>
+      <v-col md="3" sm="12">
+        <v-skeleton-loader type="image, table-tfoot" />
+      </v-col>
+      <v-col md="3" sm="12">
+        <v-skeleton-loader type="image, table-tfoot" />
+      </v-col>
+      <v-col md="3" sm="12">
+        <v-skeleton-loader type="image, table-tfoot" />
+      </v-col>
+    </v-row>
+    <v-row v-else dense>
       <v-col v-for="product in productsList" :key="product.id" cols="3">
         <v-card>
           <v-img
@@ -23,6 +37,10 @@
           </v-img>
 
           <v-card-actions>
+            <v-icon class="mr-1"> mdi-star </v-icon>
+            <div class="mr-3" v-text="product.rating.rate" />
+            <div class="mr-3">{{ product.price | currencySymbol }}</div>
+
             <v-spacer></v-spacer>
 
             <v-btn icon>

@@ -17,23 +17,23 @@
 </template>
 
 <script lang="ts">
-  import Vue from "vue";
+import Vue from "vue";
 
-  export default Vue.extend({
-    name: "SideNav",
-    data: () => ({
-      items: [
-        { title: "Dashboard", icon: "mdi-view-dashboard", path: "/" },
-        { title: "About", icon: "mdi-help-box", path: "/about" },
-      ],
-    }),
-  });
+export default Vue.extend({
+  name: "SideNav",
+  data: () => ({
+    items: [
+      { title: "Dashboard", icon: "mdi-view-dashboard", path: "/" },
+      { title: "Products", icon: "mdi-shopping", path: "/product" },
+    ],
+  }),
+});
 </script>
 
 <style lang="scss" scoped>
-  .v-navigation-drawer__content {
-    a {
-      text-decoration: none;
-    }
+.v-navigation-drawer__content {
+  a {
+    text-decoration: none;
   }
+}
 </style>
