@@ -82,7 +82,6 @@
         </v-toolbar>
       </template>
       <template v-slot:item.actions="{ item }">
-        <v-icon small class="mr-2" @click="navigate(item.id)"> mdi-eye </v-icon>
         <v-icon small class="mr-2" @click="editItem(item)"> mdi-pencil </v-icon>
         <v-icon small @click="deleteItem(item)"> mdi-delete </v-icon>
       </template>
@@ -158,9 +157,7 @@ export default {
 
   methods: {
     ...mapActions(["fetchProducts", "addProduct"]),
-    navigate(id) {
-      this.$router.push(`product/${id}`);
-    },
+
     async fetchList() {
       this.loading = true;
       await this.fetchProducts();
